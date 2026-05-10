@@ -83,7 +83,7 @@ Açılışta `App_Init()`: `AppErr_Clear`, `AppState_Init`, `SensorService_Init`
 | **NORMAL** | Ölçümler eşik altında veya alarmdan çıkış sonrası. | Alarm koşulu yokken `warning_condition` false ise burada kalınır. |
 | **WARNING** | CO veya sıcaklık **uyarı** eşiğini aşmış; alarm için gerekli ardışık örnek henüz dolmamış; veya alarmdan düşerken hâlâ uyarı bandında bulunuyor ise bu statede kalınır. | `AppState_Evaluate` her 1 s örnekte güncellenir. |
 | **ALARM** | Alarm eşiği **ardışık** `APP_CFG_ALARM_ENTER_CNT_MAX` örnek boyunca sağlanmış. | CO > alarm ppm **veya** sıcaklık > alarm °C (`app_config.h` içerisinde bu değerler belirtilmiştir). |
-| **ERROR** | `AppState_ForceError`: BLE fatal veya sensör okuma üst üste başarısız. | `AppState_Evaluate` ERROR iken değişmez; reklamda hata kodu taşınır. |
+| **ERROR** | `AppState_ForceError`: BLE fatal veya sensör okuma üst üste başarısız. | `AppState_Evaluate` ERROR iken değişmez; yayında hata kodu taşınır. |
 
 **BLE katmanı (`ble_transport.c`, dosya içi enum’lar)**
 
