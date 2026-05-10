@@ -1,5 +1,43 @@
 # fire_sensor — teknik özet
-
+-Proje Dosya Yapısı-
+fire_sensor/
+├── .cproject, .project, .mxproject     # CubeIDE / Eclipse
+├── fire_sensor.ioc                     # CubeMX
+├── fire_sensor.launch
+├── README.md
+├── STM32G474RETX_FLASH.ld
+├── STM32G474RETX_RAM.ld
+├── .gitignore
+│
+├── Core/
+│   ├── Inc/
+│   │   ├── app.h, app_config.h, app_types.h
+│   │   ├── app_state.h, app_err.h
+│   │   ├── sensor_service.h, ble_transport.h, uart_rx.h
+│   │   ├── main.h, stm32g4xx_it.h, stm32g4xx_hal_conf.h, stm32g4xx_nucleo_conf.h
+│   └── Src/
+│       ├── main.c                     
+│       ├── app.c                       
+│       ├── app_state.c                
+│       ├── app_err.c                   
+│       ├── sensor_service.c            
+│       ├── ble_transport.c            
+│       ├── uart_rx.c                   
+│       ├── stm32g4xx_it.c              
+│       ├── stm32g4xx_hal_msp.c
+│       ├── system_stm32g4xx.c, syscalls.c, sysmem.c
+│   └── Startup/startup_stm32g474retx.s
+│
+├── Docs/  
+│   ├── at_ble_reference.csv
+│   ├── fault_codes.csv
+│   ├── pin_assignments.csv
+│   └── ble_at_emulator_gui.py        
+│
+└── Drivers/                           
+    ├── CMSIS/
+    ├── STM32G4xx_HAL_Driver/
+    └── BSP/STM32G4xx_Nucleo/
 -Proje Amacı-
 
 CO ve ortam sıcaklığını periyodik ölçmek, eşiklere göre bir sistem durumu üretmek ve bu bilgiyi **BLE reklamı** ile dışarı vermek. STM32 sensörleri okur; BLE harici bir modülde çalışır ve **UART üzerinden AT komutları** ile yönetilir. İş tanımı örneği: süper döngü, durum makinesi, düşük güç (WFI), zaman aşımı ve hata yönetimi.
@@ -19,6 +57,9 @@ CO ve ortam sıcaklığını periyodik ölçmek, eşiklere göre bir sistem duru
 Özet tablo: **`docs/pin_assignments.csv`** (MCU sinyali, fiziksel pin: USART1 TX/RX, I2C1 SCL/SDA, ADC1 girişi).
 
 -Yazılım Mimarisi-
+-Akış Şeması-
+<img width="4543" height="16384" alt="image" src="https://github.com/user-attachments/assets/479fa77f-1c8f-472f-ae39-117f23ea30c9" />
+
 
 **Ana akış (`main.c` + `app.c`)**  
 Açılışta `App_Init()`: `AppErr_Clear`, `AppState_Init`, `SensorService_Init`, `BleTransport_Init`. Sonsuz döngüde `App_Run()` çağrılır; ardından `HAL_PWR_EnterSLEEPMode(..., PWR_SLEEPENTRY_WFI)`. 
