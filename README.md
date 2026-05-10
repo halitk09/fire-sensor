@@ -58,7 +58,8 @@ CO ve ortam sıcaklığını periyodik ölçmek, eşiklere göre bir sistem duru
 
 -Yazılım Mimarisi-
 -Akış Şeması-
-<img width="4543" height="16384" alt="image" src="https://github.com/user-attachments/assets/479fa77f-1c8f-472f-ae39-117f23ea30c9" />
+<img width="2708" height="4640" alt="image" src="https://github.com/user-attachments/assets/e66fb802-d169-4695-9171-871505e20e4b" />
+
 
 
 **Ana akış (`main.c` + `app.c`)**  
