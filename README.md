@@ -65,6 +65,8 @@ CO ve ortam sıcaklığını periyodik ölçmek, eşiklere göre bir sistem duru
 Özet tablo: **`Docs/pin_assignments.csv`** (MCU sinyali, fiziksel pin: USART1 TX/RX, I2C1 SCL/SDA, ADC1 girişi).
 
 ## Yazılım mimarisi
+**Akış şeması**  
+<img width="2708" height="4640" alt="image" src="https://github.com/user-attachments/assets/7a00a66c-d63a-4704-94fd-af4d4970265f" />
 
 **Ana akış (`main.c` + `app.c`)**  
 Açılışta `App_Init()`: `AppErr_Clear`, `AppState_Init`, `SensorService_Init`, `BleTransport_Init`. Sonsuz döngüde `App_Run()` çağrılır; ardından `HAL_PWR_EnterSLEEPMode(..., PWR_SLEEPENTRY_WFI)`. 
