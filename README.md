@@ -48,7 +48,7 @@ fire_sensor/
 
 ## Proje amacı
 
-CO ve ortam sıcaklığını periyodik ölçmek, eşiklere göre bir sistem durumu üretmek ve bu bilgiyi **BLE reklamı** ile dışarı vermek. STM32 sensörleri okur; BLE harici bir modülde çalışır ve **UART üzerinden AT komutları** ile yönetilir. İş tanımı örneği: süper döngü, durum makinesi, düşük güç (WFI), zaman aşımı ve hata yönetimi.
+CO ve ortam sıcaklığını periyodik olarak ölçmek, belirlenen eşiklere göre bir sistem durumu üretmek ve bu bilgiyi **BLE reklamı** ile dışarı vermek. İşlemci sensörleri okur; BLE harici bir modüle iletir ve **UART üzerinden AT komutları** ile yönetilir. İş tanımı örneği: süper döngü, durum makinesi, düşük güç (WFI), zaman aşımı ve hata yönetimi.
 
 ## Kullanılan donanımlar
 
@@ -70,18 +70,18 @@ CO ve ortam sıcaklığını periyodik ölçmek, eşiklere göre bir sistem duru
 
 **Ana akış (`main.c` + `app.c`)**  
 Açılışta `App_Init()`: `AppErr_Clear`, `AppState_Init`, `SensorService_Init`, `BleTransport_Init`. Sonsuz döngüde `App_Run()` çağrılır; ardından `HAL_PWR_EnterSLEEPMode(..., PWR_SLEEPENTRY_WFI)`. 
-`App_Run` içinde üç periyotlu iş vardır:
+`App_Run` içinde üç ayrı periyotlu yapılacak iş vardır:
 
 - ~**20 ms**: `BleTransport_Process` — UART satırları, AT yanıtı, zaman aşımı / yeniden deneme.
-- ~**1000 ms**: `SensorService_ReadCoPpm` / `ReadTmp117Celsius`, sayaçlar, yalnızca her iki okuma da başarılıysa `AppState_Evaluate`.
-- ~**1000 ms**: `BleTransport_SendAdv` — güncel ölçüm ve durum adv kuyruğuna yazılır.
+- ~**1000 ms**: `SensorService_ReadCoPpm` / `ReadTmp117Celsius`, sayaçlar, yalnızca her iki okuma da başarılıysa işlenir.
+- ~**1000 ms**: `BleTransport_SendAdv` — Güncel ölçüm ve durum adv kuyruğuna yazılır.
 
 **Uygulama durumları (`AppState_t`, `app_state.c`)**
 
 | Durum | Ne zaman | İş mantığı özeti |
 |--------|------------|------------------|
 | **NORMAL** | Ölçümler eşik altında veya alarmdan çıkış sonrası. | Alarm koşulu yokken `warning_condition` false ise burada kalınır. |
-| **WARNING** | CO veya sıcaklık **uyarı** eşiğini aşmış; alarm için gerekli ardışık örnek henüz dolmamış; veya alarmdan düşerken hâlâ uyarı bandında. | `AppState_Evaluate` her 1 s örnekte güncellenir. |
+| **WARNING** | CO veya sıcaklık **uyarı** eşiğini aşmış; alarm için gerekli ardışık örnek henüz dolmamış; veya alarmdan düşerken hâlâ uyarı bandında bulunuyor ise bu statede kalınır. | `AppState_Evaluate` her 1 s örnekte güncellenir. |
 | **ALARM** | Alarm eşiği **ardışık** `APP_CFG_ALARM_ENTER_CNT_MAX` örnek boyunca sağlanmış. | CO > alarm ppm **veya** sıcaklık > alarm °C (`app_config.h` içerisinde bu değerler belirtilmiştir). |
 | **ERROR** | `AppState_ForceError`: BLE fatal veya sensör okuma üst üste başarısız. | `AppState_Evaluate` ERROR iken değişmez; reklamda hata kodu taşınır. |
 
@@ -90,7 +90,7 @@ Açılışta `App_Init()`: `AppErr_Clear`, `AppState_Init`, `SensorService_Init`
 | İletişim state | Anlam |
 |----------------|--------|
 | **IDLE** | Komut göndermeye hazır veya yanıt işlendi. |
-| **WAIT_RESPONSE** | Son AT için `OK` / `ERROR` veya süre dolması bekleniyor. |
+| **WAIT_RESPONSE** | Son AT için `OK` / `ERROR` veya süre dolması(timeout) bekleniyor. |
 | **ERROR** (BLE içi) | Yeniden deneme tükendi; `s_fatal_error` set; `app.c` bunu `AppState_ForceError` ile uygulama **ERROR** durumuna bağlar. |
 
 **Faz sırası (`BlePhase_t`)**  
@@ -124,7 +124,7 @@ CO için tamsayı **EMA**: `yeni = (önceki*(den-num) + anlık*num) / den`; vars
 
 ## Warning ve alert
 
-Kodda **Alarm** (kullanıcı “alert” dediği) ve **Warning** ayrı eşiklerle tanımlıdır (`app_config.h` varsayılanları):
+Kodda **Alarm** (kullanıcının “alert” olarak algıladığı) ve **Warning** ayrı eşiklerle tanımlıdır (`app_config.h` varsayılanları):
 
 **Uyarı (WARNING)**  
 `CO > APP_CFG_CO_WARNING_PPM` **veya** `sıcaklık > APP_CFG_TEMP_WARNING_C` — alarm koşulu yokken bu doğruysa durum WARNING (varsayılan: 35 ppm, 45 °C).
