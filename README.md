@@ -48,7 +48,7 @@ fire_sensor/
 
 ## Proje amacı
 
-CO ve ortam sıcaklığını periyodik olarak ölçmek, belirlenen eşiklere göre bir sistem durumu üretmek ve bu bilgiyi **BLE reklamı** ile dışarı vermek. İşlemci sensörleri okur; BLE harici bir modüle iletir ve **UART üzerinden AT komutları** ile yönetilir. İş tanımı örneği: süper döngü, durum makinesi, düşük güç (WFI), zaman aşımı ve hata yönetimi.
+CO ve ortam sıcaklığını periyodik olarak ölçmek, belirlenen eşiklere göre bir sistem durumu üretmek ve bu bilgiyi **BLE adv** ile dışarı vermek. İşlemci sensörleri okur; BLE harici bir modüle iletir ve **UART üzerinden AT komutları** ile yönetilir. İş tanımı örneği: süper döngü, durum makinesi, düşük güç (WFI), zaman aşımı ve hata yönetimi.
 
 ## Kullanılan donanımlar
 
